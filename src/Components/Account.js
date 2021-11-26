@@ -9,7 +9,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
-import { Edit } from '@mui/icons-material';
+import EditableContent from './EditableContent';
 
 
 const columns = [
@@ -49,6 +49,8 @@ const calculateTotals = () => {
 export default function Account(props) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    const totals = calculateTotals();
   
     const handleChangePage = (e, newPage) => {
       setPage(newPage);
@@ -59,17 +61,13 @@ export default function Account(props) {
       setPage(0);
     };
 
-    const totals = calculateTotals();
-
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <div className="App-account-header">
-                <h3
-                    className="icon-on-hover"
-                    onClick={() => alert(props.name)}
-                >
-                    { props.name }
-                    <Edit className="show-on-hover" />
+                <h3>
+                    <EditableContent
+                        content={ props.name }
+                    />
                 </h3>
 
                 <div className="App-account-totals">
@@ -97,28 +95,41 @@ export default function Account(props) {
                     <TableBody>
                     {rows
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((row) => {
+                        .map((row, i) => {
+                        const rowKey = "row" + i;
                         const color = row.value[0] === "-" ?
                             'rgba(255, 0, 0, 0.25)' :
                             'rgba(0, 255, 0, 0.25)';
                         
                         return (
-                            <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                            {columns.map((column) => {
+                            <TableRow
+                                hover
+                                role="checkbox"
+                                tabIndex={-1}
+                                key={rowKey}
+                            >
+                            {columns.map((column) => { 
                                 const value = row[column.id];
+                                // const cellKey = rowKey + column.id;
+                                // console.log('CellKey:', cellKey);
 
                                 return (
                                 <TableCell
                                     key={column.id}
                                     align={column.align}
-                                    className="icon-on-hover"
                                     style={{ 'backgroundColor': color }}
-                                    onClick={() => alert(value)}
                                 >
-                                    { column.format && typeof value === 'number' ?
-                                        column.format(value) :
-                                        value }
-                                    <Edit className="show-on-hover" />
+                                    <EditableContent
+                                        content={
+                                            column.format && typeof value === 'number' ?
+                                                column.format(value) :
+                                                value
+                                        }
+                                        align={{
+                                            vertical: '-50%',
+                                            horizontal: column.align === 'right' ? '-50%' : '0'
+                                        }}
+                                    />
                                 </TableCell>
                                 );
                             })}

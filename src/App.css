@@ -78,6 +78,11 @@
   display: inline-block!important;
 }
 
+.App-edit-form {
+  position: absolute;
+  display: flex;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

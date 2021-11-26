@@ -20,9 +20,13 @@ export default function Account(props) {
         setEditMode(false);
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); // really necessary ?
-        console.log('Event on submit:', e);
+    const handleSubmit = () => {
+        if (value !== "") {
+            // console.log('Event on submit:', value);
+            props.submit(value);
+        }
+
+        handleCancel();
     }
 
 
@@ -38,6 +42,7 @@ export default function Account(props) {
                 value={ value }
                 placeholder={ props.content }
                 onChange={ handleChange }
+                autoFocus
             />
 
             <CheckCircle

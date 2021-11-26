@@ -7,14 +7,14 @@
 
 .App-header,
 .App-main {
+  height: 100vh;
+  display: flex;
   box-sizing: border-box;
   padding: 1em;
-  display: flex;
 }
 
 .App-header {
   background-color: #282c34;
-  height: 100vh;
   width: 380px;
   flex-direction: column;
   align-items: center;
@@ -49,6 +49,17 @@
 .App-footer * {
   margin: 0.25em;
 }
+
+.App-account-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1em;
+}
+
+.App-account-totals {
+  text-align: right;
+}
+
 
 @keyframes App-logo-spin {
   from {

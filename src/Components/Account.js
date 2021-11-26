@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,6 +8,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+
+import { Edit } from '@mui/icons-material';
+
 
 const columns = [
     // { id: 'date', label: 'Date', minWidth: 100 },
@@ -60,11 +64,18 @@ export default function Account(props) {
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <div className="App-account-header">
-                <h3>{ props.name }</h3>
+                <h3
+                    className="icon-on-hover"
+                    onClick={() => alert(props.name)}
+                >
+                    { props.name }
+                    <Edit className="show-on-hover" />
+                </h3>
+
                 <div className="App-account-totals">
                     <p>Total : { totals.incomes + totals.expenses }€</p>
-                    <p>Revenus : { totals.incomes }€</p>
-                    <p>Dépense : { totals.expenses }€</p>
+                    <p style={{ color: 'green' }}>Revenus : { totals.incomes }€</p>
+                    <p style={{ color: 'red' }}>Dépense : { totals.expenses }€</p>
                 </div>
             </div>
 
@@ -100,11 +111,14 @@ export default function Account(props) {
                                 <TableCell
                                     key={column.id}
                                     align={column.align}
+                                    className="icon-on-hover"
                                     style={{ 'backgroundColor': color }}
+                                    onClick={() => alert(value)}
                                 >
                                     { column.format && typeof value === 'number' ?
                                         column.format(value) :
                                         value }
+                                    <Edit className="show-on-hover" />
                                 </TableCell>
                                 );
                             })}

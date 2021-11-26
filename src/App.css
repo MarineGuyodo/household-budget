@@ -60,6 +60,23 @@
   text-align: right;
 }
 
+.icon-on-hover {
+  cursor: pointer;
+}
+
+.icon-on-hover .show-on-hover {
+  display: none!important;
+  position: absolute;
+  transform: translate(0.25em, -0.3em);
+  color: #fff;
+  background-color: #282c34;
+  border-radius: 1em;
+  padding: 0.2em;
+}
+
+.icon-on-hover:hover .show-on-hover {
+  display: inline-block!important;
+}
 
 @keyframes App-logo-spin {
   from {

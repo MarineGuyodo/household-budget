@@ -1,19 +1,19 @@
 import logo from './logo512.png';
 import './App.css';
 
+import Account from './Components/Account';
+
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {/* <div className="App-logo-container"> */}
-          <h1 className="App-title">
-            <img src={logo} className="App-logo" alt="logo" />
-            <span>
-              Household
-            </span>
-            Budget
-          </h1>
-        {/* </div> */}
+        <h1 className="App-title">
+          <img src={logo} className="App-logo" alt="logo" />
+          <span>
+            Household
+          </span>
+          Budget
+        </h1>
         
         <nav>
           <h2>Saisie des données</h2>
@@ -34,6 +34,10 @@ function App() {
 
       <main className="App-main">
         <p>Main part</p>
+
+        <Account
+          name="Compte 1"
+        />
       </main>
     </div>
   );

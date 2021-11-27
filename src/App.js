@@ -7,10 +7,11 @@ import { useState } from 'react';
 
 import Account from './Components/Account';
 
+
 function App() {
-  console.log('seeding', seeding[0].name);
   const [rows, setRows] = useState(seeding[0]);
 
+  
   return (
     <div className="App">
       <header className="App-header">
@@ -40,10 +41,7 @@ function App() {
       </header>
 
       <main className="App-main">
-        <p>Main part</p>
-
         <Account
-          // name="Compte 1"
           rows={ rows }
           setRows={ setRows }
         />

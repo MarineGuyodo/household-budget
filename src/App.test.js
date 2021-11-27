@@ -19,8 +19,8 @@ test('renders footer', () => {
   expect(footerSecondLinkElement).toBeInTheDocument();
 });
 
-test('renders main', () => {
+test('renders account', () => {
   render(<App />);
-  const mainTextElement = screen.getByText("Main part");
-  expect(mainTextElement).toBeInTheDocument();
+  const firstAccountElement = screen.getByText("Compte de Marine");
+  expect(firstAccountElement).toBeInTheDocument();
 });

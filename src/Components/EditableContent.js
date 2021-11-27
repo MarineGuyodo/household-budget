@@ -5,6 +5,7 @@ import Zoom from '@mui/material/Zoom';
 
 import { Cancel, CheckCircle, Delete, Edit } from '@mui/icons-material';
 
+
 export default function Account(props) {
     const [editMode, setEditMode] = useState(false);
     const [value, setValue] = useState("");
@@ -33,7 +34,7 @@ export default function Account(props) {
 
 
     return (
-    <>{ editMode ?
+    <>{ editMode &&
         <form
             className="App-edit-form"
             style={{ transform }}
@@ -56,7 +57,11 @@ export default function Account(props) {
                 onClick={ handleCancel }
                 color="warning"
             />
-        </form> : <div className="icon-on-hover">
+        </form>
+    }
+
+    { !editMode &&
+        <div className="icon-on-hover">
             { props.content }
             <div className="show-on-hover" >
                 <Tooltip

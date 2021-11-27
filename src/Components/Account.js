@@ -28,52 +28,37 @@ const columns = [
     }
 ];
 
-const calculateTotals = (rows) => {
-    return [...rows].reduce((acc, current) => {
-        if (current.value < 0) {
-            acc.expenses += parseInt(current.value);
-        } else {
-            acc.incomes += parseInt(current.value);
-        }
-
-        return acc;
-    }, { incomes: 0, expenses: 0 });
-}
   
 export default function Account(props) {
     const rows = props.rows["rows"];
 
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-
-    const totals = calculateTotals(rows);
+    const totals = (() => {
+        return [...rows].reduce((acc, current) => {
+            if (current.value < 0) {
+                acc.expenses += parseInt(current.value);
+            } else {
+                acc.incomes += parseInt(current.value);
+            }
+    
+            return acc;
+        }, { incomes: 0, expenses: 0 });
+    })();
 
     const [addForm, toggleAddForm] = useState(false);
     const [newName, setNewName] = useState("");
     const [newValue, setNewValue] = useState("");
-  
-    const handleChangePage = (e, newPage) => {
-      setPage(newPage);
-    };
-  
-    const handleChangeRowsPerPage = (e) => {
-      setRowsPerPage(+e.target.value);
-      setPage(0);
-    };
-
-    const addFormCleaning = () => {
-        toggleAddForm(!addForm);
-        setNewName("");
-        setNewValue("");
-    };
 
     const addFormProps = {
         fontSize: 'large',
         color: addForm ? 'warning' : 'success',
-        onClick: addFormCleaning
+        onClick: () => {
+            toggleAddForm(!addForm);
+            setNewName("");
+            setNewValue("");
+        }
     }
 
-    const handleSubmit = (e) => {
+    const handleAddFormSubmit = (e) => {
         e.preventDefault();
 
         let newRows = [...rows];
@@ -88,12 +73,22 @@ export default function Account(props) {
             name: newName,
             value: newValue
         });
-        // console.log(newRows);
 
         props.setRows({ name: props.rows.name, rows: newRows });
         setNewName("");
         setNewValue("");
     }
+
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+  
+    const handleChangePage = (e, newPage) => setPage(newPage);
+  
+    const handleChangeRowsPerPage = (e) => {
+      setRowsPerPage(+e.target.value);
+      setPage(0);
+    };
+
 
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -120,7 +115,7 @@ export default function Account(props) {
                     </Tooltip>
 
                     <div style={{ visibility: !addForm && 'hidden', marginRight: '1em' }}>
-                        <form onSubmit={ handleSubmit }>
+                        <form onSubmit={ handleAddFormSubmit }>
                             <input
                                 type="text"
                                 placeholder="Intitulé"
@@ -168,7 +163,7 @@ export default function Account(props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                    {rows
+                    { rows
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row) => {
                             const color = row.value < 0
@@ -177,59 +172,66 @@ export default function Account(props) {
                                     ? 'rgba(0, 255, 0, 0.25)'
                                     : 'rgba(200, 200, 200, 0.25)';
                             
-                            return (
-                                <TableRow
-                                    hover
-                                    role="checkbox"
-                                    tabIndex={-1}
-                                    key={row.id}
+                        return (
+                            <TableRow
+                                hover
+                                role="checkbox"
+                                tabIndex={-1}
+                                key={row.id}
+                            >
+                            {columns.map((column) => { 
+                                const value = row[column.id];
+
+                                const align = {
+                                    vertical: '-50%',
+                                    horizontal: '0'
+                                };
+
+                                if (column.align === 'right') {
+                                    align.horizontal = '-50%';
+                                }
+
+                                return (
+                                <TableCell
+                                    key={ column.id }
+                                    align={ column.align }
+                                    style={{ 'backgroundColor': color }}
                                 >
-                                {columns.map((column) => { 
-                                    const value = row[column.id];
+                                    <EditableContent
+                                        content={
+                                            column.format && typeof value === 'number' ?
+                                                column.format(value) :
+                                                value
+                                        }
+                                        align={ align }
+                                        submit={(data) => {                                                
+                                            let newRows = [...rows];
+                                            
+                                            let editingRow = newRows.find(item => item.id === row.id);
+                                            editingRow[column.id] = data;
 
-                                    const align = { vertical: '-50%', horizontal: '0' };
-                                    if (column.align === 'right') align.horizontal = '-50%';
-
-                                    return (
-                                    <TableCell
-                                        key={ column.id }
-                                        align={ column.align }
-                                        style={{ 'backgroundColor': color }}
-                                    >
-                                        <EditableContent
-                                            content={
-                                                column.format && typeof value === 'number' ?
-                                                    column.format(value) :
-                                                    value
-                                            }
-                                            align={ align }
-                                            submit={(data) => {                                                
-                                                let newRows = [...rows];
-                                                
-                                                let editingRow = newRows.find(item => item.id === row.id);
-                                                editingRow[column.id] = data;
-
-                                                props.setRows({ name: props.rows.name, rows: newRows });
-                                            }}
-                                            delete={() => {
-                                                let newRows = [...rows];
-                                                
-                                                const index = newRows.findIndex(item => item.id === row.id);
-                                                newRows.splice(index, 1);
-                                                
-                                                props.setRows({ name: props.rows.name, rows: newRows });
-                                            }}
-                                        />
-                                    </TableCell>
-                                    );
-                                })}
-                                </TableRow>
-                            );
-                        })}
+                                            props.setRows({ name: props.rows.name, rows: newRows });
+                                        }}
+                                        delete={() => {
+                                            let newRows = [...rows];
+                                            
+                                            const index = newRows.findIndex(item => item.id === row.id);
+                                            newRows.splice(index, 1);
+                                            
+                                            props.setRows({ name: props.rows.name, rows: newRows });
+                                        }}
+                                    />
+                                </TableCell>
+                                );
+                            })}
+                            </TableRow>
+                        );
+                    })}
                     </TableBody>
                 </Table>
             </TableContainer>
-            { rows.length > 10 &&
+
+        { rows.length > 10 &&
             <TablePagination
                 rowsPerPageOptions={[10, 25, 100]}
                 component="div"
@@ -239,7 +241,7 @@ export default function Account(props) {
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
-            }
+        }
         </Paper>
     );
 }

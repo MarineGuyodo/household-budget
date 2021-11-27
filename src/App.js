@@ -1,9 +1,17 @@
 import logo from './logo512.png';
 import './App.css';
 
+import seeding from './Data/seeding.json';
+
+import { useState } from 'react';
+
 import Account from './Components/Account';
 
+
 function App() {
+  const [rows, setRows] = useState(seeding[0]);
+
+  
   return (
     <div className="App">
       <header className="App-header">
@@ -33,10 +41,9 @@ function App() {
       </header>
 
       <main className="App-main">
-        <p>Main part</p>
-
         <Account
-          name="Compte 1"
+          rows={ rows }
+          setRows={ setRows }
         />
       </main>
     </div>

@@ -127,6 +127,14 @@ export default function Account(props) {
 
                                                 props.setRows({ name: props.rows.name, rows: newRows });
                                             }}
+                                            delete={() => {
+                                                let newRows = [...rows];
+                                                
+                                                const index = newRows.findIndex(item => item.id === row.id);
+                                                newRows.splice(index, 1);
+                                                
+                                                props.setRows({ name: props.rows.name, rows: newRows });
+                                            }}
                                         />
                                     </TableCell>
                                     );

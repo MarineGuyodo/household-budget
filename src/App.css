@@ -68,9 +68,13 @@
   display: none!important;
   position: absolute;
   transform: translate(0.25em, -0.3em);
+}
+
+.icon-on-hover .show-on-hover svg {
   color: #fff;
   background-color: #282c34;
   border-radius: 1em;
+  margin: auto 0.2em;
   padding: 0.2em;
 }
 

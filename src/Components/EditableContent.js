@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Cancel, CheckCircle, Edit } from '@mui/icons-material';
+import { Cancel, CheckCircle, Delete, Edit } from '@mui/icons-material';
 
 export default function Account(props) {
     const [editMode, setEditMode] = useState(false);
@@ -54,12 +54,20 @@ export default function Account(props) {
                 onClick={ handleCancel }
                 color="warning"
             />
-        </form> : <div
-            className="icon-on-hover"
-            onClick={() => setEditMode(!editMode)}
-        >
+        </form> : <div className="icon-on-hover">
             { props.content }
-            <Edit className="show-on-hover" />
+            <div className="show-on-hover" >
+                <Edit
+                    onClick={() => setEditMode(!editMode)}
+                />
+                <Delete
+                    onClick={() => {
+                        window.confirm(
+                            'Voulez-vous vraiment supprimer cette opération ?'
+                        ) && props.delete();
+                    }}
+                />
+            </div>
         </div>
     }</>
     );

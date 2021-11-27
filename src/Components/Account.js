@@ -30,7 +30,7 @@ const columns = [
 
   
 export default function Account(props) {
-    const rows = props.rows["rows"];
+    const rows = props.rows;
 
     const totals = (() => {
         return [...rows].reduce((acc, current) => {
@@ -74,7 +74,7 @@ export default function Account(props) {
             value: newValue
         });
 
-        props.setRows({ name: props.rows.name, rows: newRows });
+        props.setRows({ rows: newRows });
         setNewName("");
         setNewValue("");
     }
@@ -98,8 +98,8 @@ export default function Account(props) {
                 >
                     <h3>
                         <EditableContent
-                            content={ props.rows.name }
-                            submit={(data) => props.setRows({ name: data, rows })}
+                            content={ props.name }
+                            submit={(data) => props.setRows({ name: data })}
                         />
                     </h3>
 
@@ -210,7 +210,7 @@ export default function Account(props) {
                                             let editingRow = newRows.find(item => item.id === row.id);
                                             editingRow[column.id] = data;
 
-                                            props.setRows({ name: props.rows.name, rows: newRows });
+                                            props.setRows({ rows: newRows });
                                         }}
                                         delete={() => {
                                             let newRows = [...rows];
@@ -218,7 +218,7 @@ export default function Account(props) {
                                             const index = newRows.findIndex(item => item.id === row.id);
                                             newRows.splice(index, 1);
                                             
-                                            props.setRows({ name: props.rows.name, rows: newRows });
+                                            props.setRows({ rows: newRows });
                                         }}
                                     />
                                 </TableCell>

@@ -9,7 +9,7 @@ import Account from './Components/Account';
 
 
 function App() {
-  const [rows, setRows] = useState(seeding[0]);
+  const [data, setData] = useState(seeding);
 
   
   return (
@@ -41,10 +41,24 @@ function App() {
       </header>
 
       <main className="App-main">
-        <Account
-          rows={ rows }
-          setRows={ setRows }
-        />
+      { data.map((account) => {
+        return (
+          <Account
+            key={ account.id }
+            name={ account.name }
+            rows={ account.rows }
+            setRows={(obj) => {
+              let newData = [...data];
+
+              let index = newData.findIndex(item => item.id === account.id);
+              
+              Object.keys(obj).forEach(key => newData[index][key] = obj[key]);
+
+              setData(newData);
+            }}
+          />
+        )
+      })}
       </main>
     </div>
   );

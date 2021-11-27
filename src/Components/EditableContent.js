@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
+
 import { Cancel, CheckCircle, Delete, Edit } from '@mui/icons-material';
 
 export default function Account(props) {
@@ -22,7 +25,6 @@ export default function Account(props) {
 
     const handleSubmit = () => {
         if (value !== "") {
-            // console.log('Event on submit:', value);
             props.submit(value);
         }
 
@@ -57,16 +59,29 @@ export default function Account(props) {
         </form> : <div className="icon-on-hover">
             { props.content }
             <div className="show-on-hover" >
-                <Edit
-                    onClick={() => setEditMode(!editMode)}
-                />
-                <Delete
-                    onClick={() => {
-                        window.confirm(
-                            'Voulez-vous vraiment supprimer cette opération ?'
-                        ) && props.delete();
-                    }}
-                />
+                <Tooltip
+                    title="Modifier"
+                    placement="top"
+                    TransitionComponent={Zoom}
+                >
+                    <Edit
+                        onClick={() => setEditMode(!editMode)}
+                    />
+                </Tooltip>
+                
+                <Tooltip
+                    title="Supprimer"
+                    placement="top"
+                    TransitionComponent={Zoom}
+                >                
+                    <Delete
+                        onClick={() => {
+                            window.confirm(
+                                'Voulez-vous vraiment supprimer cette opération ?'
+                            ) && props.delete();
+                        }}
+                    />
+                </Tooltip>
             </div>
         </div>
     }</>

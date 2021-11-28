@@ -129,13 +129,13 @@ export default function Account(props) {
                 </div>
 
                 <div className="App-account-totals">
-                    <p>Total : { props.totals.incomes + props.totals.expenses }€</p>
+                    <p>Balance : { props.totals.incomes + props.totals.expenses }€</p>
                     <p style={{ color: 'green' }}>Revenus : { props.totals.incomes }€</p>
-                    <p style={{ color: 'red' }}>Dépense : { props.totals.expenses }€</p>
+                    <p style={{ color: 'red' }}>Dépenses : { props.totals.expenses }€</p>
                 </div>
             </div>
 
-            <TableContainer sx={{ maxHeight: '80%' }}>
+            <TableContainer sx={{ maxHeight: '80%', overflowX: 'hidden', paddingRight: '0.5em' }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
@@ -155,10 +155,10 @@ export default function Account(props) {
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row) => {
                             const color = row.value < 0
-                                ? 'rgba(255, 0, 0, 0.25)'
+                                ? 'rgba(10, 46, 52, 0.4)'
                                 : row.value > 0
-                                    ? 'rgba(0, 255, 0, 0.25)'
-                                    : 'rgba(200, 200, 200, 0.25)';
+                                    ? 'rgba(255, 187, 0, 0.4)'
+                                    : 'lightgrey';
                             
                         return (
                             <TableRow
@@ -166,24 +166,15 @@ export default function Account(props) {
                                 role="checkbox"
                                 tabIndex={-1}
                                 key={row.id}
+                                style={{ 'backgroundColor': color }}
                             >
                             {columns.map((column) => { 
                                 const value = row[column.id];
-
-                                const align = {
-                                    vertical: '-50%',
-                                    horizontal: '0'
-                                };
-
-                                if (column.align === 'right') {
-                                    align.horizontal = '-50%';
-                                }
 
                                 return (
                                 <TableCell
                                     key={ column.id }
                                     align={ column.align }
-                                    style={{ 'backgroundColor': color }}
                                 >
                                     <EditableContent
                                         content={
@@ -191,7 +182,7 @@ export default function Account(props) {
                                                 column.format(value) :
                                                 value
                                         }
-                                        align={ align }
+                                        align={ column.align || 'default' }
                                         submit={(data) => {                                                
                                             let newRows = [...rows];
                                             

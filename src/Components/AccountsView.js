@@ -10,7 +10,8 @@ function AccountsView(props) {
                 height: '10%',
                 padding: '1em',
                 columnGap: '1em',
-                backgroundColor: 'lightgrey',
+                backgroundColor: 'rgba(255, 187, 0, 0.2)',
+                boxShadow: '14px 0px 14px 10px lightgrey',
                 boxSizing: 'border-box'
             }}
         >

@@ -32,18 +32,6 @@ const columns = [
 export default function Account(props) {
     const rows = props.rows;
 
-    const totals = (() => {
-        return [...rows].reduce((acc, current) => {
-            if (current.value < 0) {
-                acc.expenses += parseInt(current.value);
-            } else {
-                acc.incomes += parseInt(current.value);
-            }
-    
-            return acc;
-        }, { incomes: 0, expenses: 0 });
-    })();
-
     const [addForm, toggleAddForm] = useState(false);
     const [newName, setNewName] = useState("");
     const [newValue, setNewValue] = useState("");
@@ -91,7 +79,7 @@ export default function Account(props) {
 
 
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <Paper sx={{ overflow: 'hidden' }}>
             <div className="App-account-header">
                 <div
                     style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}
@@ -141,9 +129,9 @@ export default function Account(props) {
                 </div>
 
                 <div className="App-account-totals">
-                    <p>Total : { totals.incomes + totals.expenses }€</p>
-                    <p style={{ color: 'green' }}>Revenus : { totals.incomes }€</p>
-                    <p style={{ color: 'red' }}>Dépense : { totals.expenses }€</p>
+                    <p>Total : { props.totals.incomes + props.totals.expenses }€</p>
+                    <p style={{ color: 'green' }}>Revenus : { props.totals.incomes }€</p>
+                    <p style={{ color: 'red' }}>Dépense : { props.totals.expenses }€</p>
                 </div>
             </div>
 

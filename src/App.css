@@ -4,14 +4,16 @@
 
 .App {
   text-align: center;
+  height: 100vh;
   width: 100vw;
   display: flex;
   flex-direction: row;
+  box-sizing: border-box;
+  /* overflow: hidden; */
 }
 
 .App-header,
 .App-main {
-  height: 100vh;
   display: flex;
   box-sizing: border-box;
   padding: 1em;
@@ -19,11 +21,12 @@
 
 .App-header {
   background-color: #282c34;
-  width: 380px;
+  height: 100%;
+  width: 360px;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  font-size: 1.25em;
+  font-size: 1.15em;
   color: white;
 }
 
@@ -41,8 +44,28 @@
   font-weight: normal;
 }
 
+.App-summary {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+.App-summary div {
+  display: flex;
+  align-items: center;
+  margin: 0.5em;
+}
+
+.App-summary div * {
+  margin: 0.2em;
+}
+
 .App-link {
   color: #61dafb;
+}
+
+.App-main {
+  height: 90%;
 }
 
 .App-footer {

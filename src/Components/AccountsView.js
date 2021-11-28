@@ -1,7 +1,7 @@
 import Account from './Account';
 
 
-function AccountsView(props) {    
+function AccountsView(props) {
     return (
     <>
         <nav
@@ -34,13 +34,20 @@ function AccountsView(props) {
                 totals={ props.totals[account.id] }
                 rows={ account.rows }
                 setRows={(obj) => {
-                let newData = [...props.data];
+                    let newData = [...props.data];
 
-                let index = newData.findIndex(item => item.id === account.id);
+                    let index = newData.findIndex(item => item.id === account.id);
+                    Object.keys(obj).forEach(key => newData[index][key] = obj[key]);
 
-                Object.keys(obj).forEach(key => newData[index][key] = obj[key]);
+                    props.setData(newData);
+                }}
+                delete={() => {
+                    let allAccounts = [...props.data];
+                    
+                    const index = allAccounts.findIndex(item => item.id === account.id);
+                    allAccounts.splice(index, 1);
 
-                props.setData(newData);
+                    props.setData(allAccounts);
                 }}
             />
             )

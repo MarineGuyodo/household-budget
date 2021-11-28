@@ -88,6 +88,7 @@ export default function Account(props) {
                         <EditableContent
                             content={ props.name }
                             submit={(data) => props.setRows({ name: data })}
+                            delete={ props.delete }
                         />
                     </h3>
 

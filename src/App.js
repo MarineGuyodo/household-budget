@@ -10,7 +10,7 @@ import Zoom from '@mui/material/Zoom';
 
 import { Balance, Euro, Receipt } from '@mui/icons-material';
 
-import Account from './Components/Account';
+import AccountsView from './Components/AccountsView';
 
 
 const calculateTotals = (accounts) => {
@@ -118,48 +118,12 @@ function App() {
           height: '100vh',
           boxSizing: 'border-box'
         }}
-        >
-        <nav
-          style={{
-            display: 'flex',
-            height: '10%',
-            padding: '1em',
-            columnGap: '1em',
-            backgroundColor: 'lightgrey',
-            boxSizing: 'border-box'
-          }}
-        >
-          { data.map(elem => {
-            return (
-              <p>{ elem.name }</p>
-            )
-          })}
-        </nav>
-
-        <main
-          className="App-main"
-          style={{ columnGap: '1em' }}
-        >
-        { data.map((account) => {
-          return (
-            <Account
-              key={ account.id }
-              name={ account.name }
-              totals={ totals[account.id] }
-              rows={ account.rows }
-              setRows={(obj) => {
-                let newData = [...data];
-
-                let index = newData.findIndex(item => item.id === account.id);
-
-                Object.keys(obj).forEach(key => newData[index][key] = obj[key]);
-
-                setData(newData);
-              }}
-            />
-          )
-        })}
-        </main>
+      >
+        <AccountsView
+          data={ data }
+          setData={ setData }
+          totals={ totals }
+        />
       </div>
     </div>
   );

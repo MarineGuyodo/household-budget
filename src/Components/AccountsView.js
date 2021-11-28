@@ -1,20 +1,89 @@
+import { useState } from 'react';
+
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
+
+import { AddCircle, Cancel } from '@mui/icons-material';
+
 import Account from './Account';
 
 
 function AccountsView(props) {
+    const [addForm, toggleAddForm] = useState(false);
+    const [newName, setNewName] = useState("");
+
+    const addFormProps = {
+        fontSize: 'large',
+        color: addForm ? 'warning' : 'success',
+        onClick: () => {
+            toggleAddForm(!addForm);
+            setNewName("");
+        }
+    }
+
+    const handleAddAccountSubmit = (e) => {
+        e.preventDefault();
+
+        let allAccounts = [...props.data];
+        
+        let highestId = 0;
+        allAccounts.forEach(elem => {
+            if (elem.id > highestId) highestId = elem.id;
+        });
+        
+        allAccounts.push({
+            id: highestId + 1,
+            name: newName,
+            rows: []
+        });
+
+        props.setData(allAccounts);
+        setNewName("");
+        toggleAddForm(false);
+    }
+
+
     return (
     <>
         <nav
             style={{
                 display: 'flex',
                 height: '10%',
+                boxSizing: 'border-box',
                 padding: '1em',
+                alignItems: 'center',
                 columnGap: '1em',
                 backgroundColor: 'rgba(255, 187, 0, 0.2)',
-                boxShadow: '14px 0px 14px 10px lightgrey',
-                boxSizing: 'border-box'
+                boxShadow: '14px 0px 14px 10px lightgrey'
             }}
         >
+            <Tooltip
+                title={ addForm ? "Annuler" : "Nouveau compte" }
+                placement="left"
+                TransitionComponent={Zoom}
+            >
+                { addForm
+                    ? <Cancel {...addFormProps} />
+                    : <AddCircle {...addFormProps} />
+                }
+            </Tooltip>
+
+            <div style={{ visibility: !addForm && 'hidden', marginRight: '1em' }}>
+                <form onSubmit={ handleAddAccountSubmit }>
+                    <input
+                        type="text"
+                        placeholder="Nom du nouveau compte"
+                        value={ newName }
+                        onChange={(e) => setNewName(e.target.value)}
+                        autoFocus
+                    ></input>
+                    <input
+                        type="submit"
+                        value="Créer"
+                    ></input>
+                </form>
+            </div>
+
         { props.data.map(elem => {
             return (
             <p key={ elem.id }>{ elem.name }</p>

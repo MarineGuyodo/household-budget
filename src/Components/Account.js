@@ -79,7 +79,7 @@ export default function Account(props) {
 
 
     return (
-        <Paper sx={{ overflow: 'hidden' }}>
+        <Paper sx={{ overflow: 'hidden', display: props.visible ? 'block' : 'none' }}>
             <div className="App-account-header">
                 <div
                     style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}

@@ -9,6 +9,13 @@ import Account from './Account';
 
 
 function AccountsView(props) {
+    const [visibles, toggleVisibles] = useState(
+        [...props.data].reduce((a, b) => {
+            a[b.id] = true;
+            return a;
+        }, {})
+    );
+
     const [addForm, toggleAddForm] = useState(false);
     const [newName, setNewName] = useState("");
 
@@ -40,6 +47,7 @@ function AccountsView(props) {
         props.setData(allAccounts);
         setNewName("");
         toggleAddForm(false);
+        toggleVisibles({...visibles, [highestId + 1]: true });
     }
 
 
@@ -84,43 +92,48 @@ function AccountsView(props) {
                 </form>
             </div>
 
-        { props.data.map(elem => {
-            return (
-            <p key={ elem.id }>{ elem.name }</p>
-            )
-        })}
+        { props.data.map(elem => (
+            <p
+                key={ elem.id }
+                style={{ color: visibles[elem.id] === true ? 'green' : 'red' }}
+                onClick={() => {
+                    const newVisibles = {...visibles};
+                    newVisibles[elem.id] = !newVisibles[elem.id];
+                    toggleVisibles(newVisibles);
+                }}
+            >{ elem.name }</p>
+        ))}
         </nav>
 
         <main
             className="App-main"
             style={{ columnGap: '1em' }}
         >
-        { props.data.map((account) => {
-            return (
-            <Account
-                key={ account.id }
-                name={ account.name }
-                totals={ props.totals[account.id] }
-                rows={ account.rows }
-                setRows={(obj) => {
-                    let newData = [...props.data];
+        { props.data.map((account) => (
+        <Account
+            key={ account.id }
+            visible={ visibles[account.id] }
+            name={ account.name }
+            totals={ props.totals[account.id] }
+            rows={ account.rows }
+            setRows={(obj) => {
+                let newData = [...props.data];
 
-                    let index = newData.findIndex(item => item.id === account.id);
-                    Object.keys(obj).forEach(key => newData[index][key] = obj[key]);
+                let index = newData.findIndex(item => item.id === account.id);
+                Object.keys(obj).forEach(key => newData[index][key] = obj[key]);
 
-                    props.setData(newData);
-                }}
-                delete={() => {
-                    let allAccounts = [...props.data];
-                    
-                    const index = allAccounts.findIndex(item => item.id === account.id);
-                    allAccounts.splice(index, 1);
+                props.setData(newData);
+            }}
+            delete={() => {
+                let allAccounts = [...props.data];
+                
+                const index = allAccounts.findIndex(item => item.id === account.id);
+                allAccounts.splice(index, 1);
 
-                    props.setData(allAccounts);
-                }}
-            />
-            )
-        })}
+                props.setData(allAccounts);
+            }}
+        />
+        ))}
         </main>
     </>
     );

@@ -62,17 +62,6 @@ function App() {
         <nav>
           <div className="App-summary">
             <Tooltip
-                title={ "Balance" }
-                placement="top"
-                TransitionComponent={Zoom}
-            >
-              <div>
-                <Balance />
-                { balance }
-              </div>
-            </Tooltip>
-
-            <Tooltip
                 title={ "Revenus" }
                 placement="top"
                 TransitionComponent={Zoom}
@@ -94,6 +83,17 @@ function App() {
                 { expenses }
               </div>
             </Tooltip>
+
+            <Tooltip
+                title={ "Balance" }
+                placement="top"
+                TransitionComponent={Zoom}
+            >
+              <div>
+                <Balance />
+                { balance }
+              </div>
+            </Tooltip>
           </div>
 
           <h2>Saisie des données</h2>
@@ -112,13 +112,7 @@ function App() {
         </footer>
       </header>
 
-      <div
-        style={{
-          width: 'calc(100vw - 360px)',
-          height: '100vh',
-          boxSizing: 'border-box'
-        }}
-      >
+      <div className="App-main">
         <AccountsView
           data={ data }
           setData={ setData }

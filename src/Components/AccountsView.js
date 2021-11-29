@@ -9,75 +9,90 @@ import Account from './Account';
 
 
 function AccountsView(props) {
-    const [visibles, toggleVisibles] = useState(
-        [...props.data].reduce((a, b) => {
-            a[b.id] = true;
-            return a;
-        }, {})
-    );
+    // Toggle accounts visibiliyy
+    const [visibles, toggleVisibles] = useState([...props.data].reduce(
+        (a, b) => { return {...a, [b.id]: true } }, {}
+    ));
 
-    const [addForm, toggleAddForm] = useState(false);
+    const handleToggleVisible = (elemId) => {
+        const newVisibles = {...visibles};
+        newVisibles[elemId] = !newVisibles[elemId];
+        toggleVisibles(newVisibles);
+    }
+
+    // Handling scroll depending on mouse position
+    const handleOnScroll = (e) => {
+        if (!e.target.closest('.scrollable-y')) {
+            document.querySelector('.Accounts-main').scrollLeft += e.deltaY;
+        }
+    }
+
+    // Toggle and manage new account form
+    const [newAccountForm, toggleNewAccountForm] = useState(false);
     const [newName, setNewName] = useState("");
 
-    const addFormProps = {
+    const newAccountFormProps = {
+        color: newAccountForm ? 'warning' : 'success',
         fontSize: 'large',
-        color: addForm ? 'warning' : 'success',
         onClick: () => {
-            toggleAddForm(!addForm);
+            toggleNewAccountForm(!newAccountForm);
             setNewName("");
         }
     }
 
-    const handleAddAccountSubmit = (e) => {
+    const handleNewAccount = (e) => {
         e.preventDefault();
 
         let allAccounts = [...props.data];
+        let highestId = [...allAccounts].sort((a, b) => b.id - a.id)[0]['id'] + 1;
         
-        let highestId = 0;
-        allAccounts.forEach(elem => {
-            if (elem.id > highestId) highestId = elem.id;
-        });
-        
-        allAccounts.push({
-            id: highestId + 1,
-            name: newName,
-            rows: []
-        });
+        allAccounts.push({ id: highestId, name: newName, rows: [] });
 
         props.setData(allAccounts);
         setNewName("");
-        toggleAddForm(false);
-        toggleVisibles({...visibles, [highestId + 1]: true });
+        toggleNewAccountForm(false);
+        toggleVisibles({...visibles, [highestId]: true });
+    }
+
+    // Manage edit account (only name for the moment)
+    const handleEditAccount = (obj, accountId) => {
+        let allAccounts = [...props.data];
+
+        let accountIndex = allAccounts.findIndex(item => item.id === accountId);
+        Object.keys(obj).forEach(key => allAccounts[accountIndex][key] = obj[key]);
+
+        props.setData(allAccounts);
+    }
+
+    // Manage delete account
+    const handleDeleteAccount = (accountId) => {
+        let allAccounts = [...props.data];
+        
+        const accountIndex = allAccounts.findIndex(item => item.id === accountId);
+        allAccounts.splice(accountIndex, 1);
+
+        props.setData(allAccounts);
     }
 
 
     return (
     <>
-        <nav
-            style={{
-                display: 'flex',
-                height: '10%',
-                boxSizing: 'border-box',
-                padding: '1em',
-                alignItems: 'center',
-                columnGap: '1em',
-                backgroundColor: 'rgba(255, 187, 0, 0.2)',
-                boxShadow: '14px 0px 14px 10px lightgrey'
-            }}
-        >
+        <nav className="Accounts-toolbar">
             <Tooltip
-                title={ addForm ? "Annuler" : "Nouveau compte" }
+                title={ newAccountForm ? "Annuler" : "Nouveau compte" }
                 placement="left"
                 TransitionComponent={Zoom}
             >
-                { addForm
-                    ? <Cancel {...addFormProps} />
-                    : <AddCircle {...addFormProps} />
+                <div>
+                { newAccountForm
+                    ? <Cancel {...newAccountFormProps} />
+                    : <AddCircle {...newAccountFormProps} />
                 }
+                </div>
             </Tooltip>
 
-            <div style={{ visibility: !addForm && 'hidden', marginRight: '1em' }}>
-                <form onSubmit={ handleAddAccountSubmit }>
+            <div style={{ display: !newAccountForm && 'none', marginRight: '1em' }}>
+                <form onSubmit={ handleNewAccount }>
                     <input
                         type="text"
                         placeholder="Nom du nouveau compte"
@@ -93,46 +108,39 @@ function AccountsView(props) {
             </div>
 
         { props.data.map(elem => (
-            <p
+            <Tooltip
                 key={ elem.id }
-                style={{ color: visibles[elem.id] === true ? 'green' : 'red' }}
-                onClick={() => {
-                    const newVisibles = {...visibles};
-                    newVisibles[elem.id] = !newVisibles[elem.id];
-                    toggleVisibles(newVisibles);
-                }}
-            >{ elem.name }</p>
+                title={ visibles[elem.id] ? "Masquer" : "Afficher" }
+                placement="bottom"
+                TransitionComponent={Zoom}
+            >
+                <p
+                    className='Accounts-toolbar-btn'
+                    style={{
+                        color: visibles[elem.id] === true ? 'black' : 'grey',
+                        opacity: visibles[elem.id] === true ? '1' : '0.8'
+                    }}
+                    onClick={() => handleToggleVisible(elem.id)}
+                >{ elem.name }</p>
+            </Tooltip>
         ))}
         </nav>
 
         <main
-            className="App-main"
+            className="Accounts-main"
             style={{ columnGap: '1em' }}
+            onWheel={ handleOnScroll }
         >
         { props.data.map((account) => (
-        <Account
-            key={ account.id }
-            visible={ visibles[account.id] }
-            name={ account.name }
-            totals={ props.totals[account.id] }
-            rows={ account.rows }
-            setRows={(obj) => {
-                let newData = [...props.data];
-
-                let index = newData.findIndex(item => item.id === account.id);
-                Object.keys(obj).forEach(key => newData[index][key] = obj[key]);
-
-                props.setData(newData);
-            }}
-            delete={() => {
-                let allAccounts = [...props.data];
-                
-                const index = allAccounts.findIndex(item => item.id === account.id);
-                allAccounts.splice(index, 1);
-
-                props.setData(allAccounts);
-            }}
-        />
+            <Account
+                key={ account.id }
+                visible={ visibles[account.id] }
+                name={ account.name }
+                totals={ props.totals[account.id] }
+                rows={ account.rows }
+                setRows={(obj) => handleEditAccount(obj, account.id)}
+                delete={() => handleDeleteAccount(account.id)}
+            />
         ))}
         </main>
     </>

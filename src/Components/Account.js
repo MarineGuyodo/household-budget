@@ -30,8 +30,21 @@ const columns = [
 
   
 export default function Account(props) {
+    // Main data (operations)
     const rows = props.rows;
 
+    // Manage navigation between table pages
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    
+    const handleChangePage = (e, newPage) => setPage(newPage);
+    
+    const handleChangeRowsPerPage = (e) => {
+        setRowsPerPage(+e.target.value);
+        setPage(0);
+    };
+
+    // Toggle and manage new operation form
     const [addForm, toggleAddForm] = useState(false);
     const [newName, setNewName] = useState("");
     const [newValue, setNewValue] = useState("");
@@ -46,7 +59,7 @@ export default function Account(props) {
         }
     }
 
-    const handleAddFormSubmit = (e) => {
+    const handleNewOperation = (e) => {
         e.preventDefault();
 
         let newRows = [...rows];
@@ -67,22 +80,35 @@ export default function Account(props) {
         setNewValue("");
     }
 
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-  
-    const handleChangePage = (e, newPage) => setPage(newPage);
-  
-    const handleChangeRowsPerPage = (e) => {
-      setRowsPerPage(+e.target.value);
-      setPage(0);
-    };
+    // Manage edit operation 
+    const handleEditOperation = (data, rowId, columnId) => {                                                
+        let newRows = [...rows];
+        
+        let editingRow = newRows.find(item => item.id === rowId);
+        editingRow[columnId] = data;
+
+        props.setRows({ rows: newRows });
+    }
+
+    // Manage delete operation
+    const handleDeleteOperation = (rowId) => {
+        let newRows = [...rows];
+        
+        const index = newRows.findIndex(item => item.id === rowId);
+        newRows.splice(index, 1);
+        
+        props.setRows({ rows: newRows });
+    }
 
 
     return (
-        <Paper sx={{ overflow: 'hidden', display: props.visible ? 'block' : 'none' }}>
-            <div className="App-account-header">
+        <Paper sx={{ display: props.visible ? 'block' : 'none' }}>
+            <div className="Account-header">
                 <div
-                    style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between'
+                    }}
                 >
                     <h3>
                         <EditableContent
@@ -92,19 +118,51 @@ export default function Account(props) {
                         />
                     </h3>
 
+                    <div className="Account-totals">
+                        <p style={{ color: 'green' }}>
+                            Revenus
+                            <span>{ props.totals.incomes }€</span>
+                        </p>
+                        <p style={{ color: 'red' }}>
+                            Dépenses
+                            <span>{ props.totals.expenses }€</span>
+                        </p>
+                        <p>
+                            Balance
+                            <span>{ props.totals.incomes + props.totals.expenses }€</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}
+                >
                     <Tooltip
                         title={ addForm ? "Annuler" : "Nouvelle opération" }
-                        placement="right"
+                        placement="left"
                         TransitionComponent={Zoom}
                     >
+                        <div>
                         { addForm
                             ? <Cancel {...addFormProps} />
                             : <AddCircle {...addFormProps} />
                         }
+                        </div>
                     </Tooltip>
 
-                    <div style={{ visibility: !addForm && 'hidden', marginRight: '1em' }}>
-                        <form onSubmit={ handleAddFormSubmit }>
+                    <div
+                        style={{
+                            visibility: !addForm && 'hidden',
+                            marginRight: '1em'
+                        }}
+                    >
+                        <form
+                            style={{ width: '100%' }}
+                            onSubmit={ handleNewOperation }
+                        >
                             <input
                                 type="text"
                                 placeholder="Intitulé"
@@ -128,15 +186,17 @@ export default function Account(props) {
                         </form>
                     </div>
                 </div>
-
-                <div className="App-account-totals">
-                    <p>Balance : { props.totals.incomes + props.totals.expenses }€</p>
-                    <p style={{ color: 'green' }}>Revenus : { props.totals.incomes }€</p>
-                    <p style={{ color: 'red' }}>Dépenses : { props.totals.expenses }€</p>
-                </div>
             </div>
 
-            <TableContainer sx={{ maxHeight: '80%', overflowX: 'hidden', paddingRight: '0.5em' }}>
+            <TableContainer
+                className={ rows.length > 10 ? 'scrollable-y' : '' }
+                sx={{
+                    maxHeight: '79%',
+                    overflowX: 'hidden',
+                    marginRight: '0.6em',
+                    paddingRight: '0.2em'
+                }}
+            >
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
@@ -179,27 +239,13 @@ export default function Account(props) {
                                 >
                                     <EditableContent
                                         content={
-                                            column.format && typeof value === 'number' ?
-                                                column.format(value) :
-                                                value
+                                            column.format && typeof value === 'number'
+                                                ? column.format(value)
+                                                : value
                                         }
                                         align={ column.align || 'default' }
-                                        submit={(data) => {                                                
-                                            let newRows = [...rows];
-                                            
-                                            let editingRow = newRows.find(item => item.id === row.id);
-                                            editingRow[column.id] = data;
-
-                                            props.setRows({ rows: newRows });
-                                        }}
-                                        delete={() => {
-                                            let newRows = [...rows];
-                                            
-                                            const index = newRows.findIndex(item => item.id === row.id);
-                                            newRows.splice(index, 1);
-                                            
-                                            props.setRows({ rows: newRows });
-                                        }}
+                                        submit={(data) => handleEditOperation(data, row.id, column.id)}
+                                        delete={() => handleDeleteOperation(row.id)}
                                     />
                                 </TableCell>
                                 );

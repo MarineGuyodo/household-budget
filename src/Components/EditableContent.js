@@ -31,7 +31,8 @@ export default function Account(props) {
 
 
     return (
-    <>{ editMode &&
+    <div className="icon-on-hover">
+    { editMode &&
         <form
             className="App-edit-form"
             style={{
@@ -62,39 +63,39 @@ export default function Account(props) {
     }
 
     { !editMode &&
-        <div className="icon-on-hover">
-            { props.content }
-            <div
-                className="show-on-hover"
-                style={{
-                    transform: 'translate(' + (props.align === 'right' ? '20%' : '-10%') + ', -80%)'
-                }}
+    <>
+        { props.content }
+        <div
+            className="show-on-hover"
+            style={{
+                transform: 'translate(' + (props.align === 'right' ? '20%' : '-10%') + ', -80%)'
+            }}
+        >
+            <Tooltip
+                title="Modifier"
+                placement="top"
+                TransitionComponent={Zoom}
             >
-                <Tooltip
-                    title="Modifier"
-                    placement="top"
-                    TransitionComponent={Zoom}
-                >
-                    <Edit
-                        onClick={() => setEditMode(!editMode)}
-                    />
-                </Tooltip>
-                
-                <Tooltip
-                    title="Supprimer"
-                    placement="top"
-                    TransitionComponent={Zoom}
-                >                
-                    <Delete
-                        onClick={() => {
-                            window.confirm(
-                                'Voulez-vous vraiment supprimer cette opération ?'
-                            ) && props.delete();
-                        }}
-                    />
-                </Tooltip>
-            </div>
+                <Edit
+                    onClick={() => setEditMode(!editMode)}
+                />
+            </Tooltip>
+            
+            <Tooltip
+                title="Supprimer"
+                placement="top"
+                TransitionComponent={Zoom}
+            >                
+                <Delete
+                    onClick={() => {
+                        window.confirm(
+                            'Voulez-vous vraiment supprimer cette opération ?'
+                        ) && props.delete();
+                    }}
+                />
+            </Tooltip>
         </div>
-    }</>
+    </>}
+    </div>
     );
 };

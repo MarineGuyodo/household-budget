@@ -4,45 +4,75 @@
 
 .App {
   text-align: center;
+  height: 100vh;
   width: 100vw;
   display: flex;
   flex-direction: row;
-}
-
-.App-header,
-.App-main {
-  height: 100vh;
-  display: flex;
   box-sizing: border-box;
-  padding: 1em;
 }
 
 .App-header {
-  background-color: #282c34;
-  width: 380px;
+  display: flex;
+  box-sizing: border-box;
+  padding: 1em;
+  position: sticky;
+  left: 0;
+}
+
+.App-header {
+  background-color: #0a2e34;
+  height: 100%;
+  max-width: 360px;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  font-size: 1.25em;
+  font-size: 1.1em;
   color: white;
+  z-index: 10;
 }
 
 .App-logo {
   width: 25vmin;
-  max-width: 360px;
+  /* max-width: 360px; */
   pointer-events: none;
+  transform: translateY(1vh) rotateZ(-36deg);
 }
 .App-title {
-  transform: translateY(-2vh);
+  margin-top: -1vh;
   text-shadow: 1px 1px 2px white;
+  padding: 1em;
 }
 
 .App-title span {
   font-weight: normal;
 }
 
+.App-summary {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+.App-summary div {
+  display: flex;
+  align-items: center;
+  margin: 0.5em;
+}
+
+.App-summary div * {
+  margin: 0.2em;
+}
+
 .App-link {
-  color: #61dafb;
+  color: #fb0;
+}
+
+.App-main {
+  /* height: 90%; */
+  /* width: calc(100vw - 360px); */
+  width: 100%;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
 .App-footer {
@@ -59,25 +89,74 @@
 * SPECIFIC SECTIONS
 **/
 
-.App-account-header {
+.Accounts-toolbar {
   display: flex;
+  height: 10%;
+  width: 100%;
+  position: sticky;
+  left: 360px;
+  box-sizing: border-box;
+  padding: 1em 2em;
+  align-items: center;
+  column-gap: 1em;
+  background-color: rgba(255, 187, 0, 0.2);
+  box-shadow: 14px 0px 14px 10px lightgrey;
+}
+
+.Accounts-toolbar-btn {
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0px 2px 6px -4px gray;
+  padding: 1em;
+  border-radius: 4px;
+}
+
+.Accounts-toolbar-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 2px 6px -2px gray;
+  opacity: 1!important;
+}
+
+.Accounts-main {
+  display: flex;
+  height: 90%;
+  box-sizing: border-box;
+  padding: 1em;
+  /* margin-top: 5%; */
+}
+
+.Account-header {
+  display: flex;
+  flex-direction: column;
   justify-content: space-between;
   padding: 0 1em;
 }
 
-.App-account-totals {
-  text-align: right;
+.Account-totals {
+  display: flex;
+  /* text-align: right; */
+  text-align: center;
+  column-gap: 1em;
+}
+
+.Account-totals p span {
+  font-weight: bold;
+  display: block;
 }
 
 .icon-on-hover {
   cursor: pointer;
+  position: relative;
 }
 
 .icon-on-hover .show-on-hover {
-  display: inline-block;
   opacity: 0;
   position: absolute;
+  display: flex;
   transition: opacity 0.3s ease-in-out;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 0.4em 0.2em;
+  border-radius: 4px;
 }
 
 .icon-on-hover .show-on-hover svg {
@@ -92,6 +171,23 @@
 .App-edit-form {
   position: absolute;
   display: flex;
+}
+
+
+/**
+* SCROLLING
+**/
+
+body,
+.root,
+.App,
+.App-main {
+  overflow: hidden;
+}
+
+.Accounts-main {
+  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 
@@ -112,8 +208,8 @@
 /**
 * MEDIA QUERIES
 **/
-@media (prefers-reduced-motion: no-preference) {
+/* @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
-}
+} */

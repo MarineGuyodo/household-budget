@@ -24,3 +24,10 @@ test('renders account', () => {
   const firstAccountElement = screen.getByText("Compte de Marine");
   expect(firstAccountElement).toBeInTheDocument();
 });
+
+test('renders a second account', () => {
+  render(<App />);
+  const secondAccountElement = screen.getByText("Compte de Nathan");
+  expect(secondAccountElement).toBeInTheDocument();
+});
+

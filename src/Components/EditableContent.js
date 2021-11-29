@@ -10,21 +10,18 @@ export default function Account(props) {
     const [editMode, setEditMode] = useState(false);
     const [value, setValue] = useState("");
 
-    let transform = "translate(";
-    transform += (props?.align?.horizontal || 0) + ', ';
-    transform += (props?.align?.vertical || 0) + ')';
-
     const handleChange = (e) => {
         // TODO: Validations will come later
         setValue(e.target.value);
     }
-
+    
     const handleCancel = () => {
         setValue("");
         setEditMode(false);
     }
-
+    
     const handleSubmit = () => {
+        // TODO: Validations will come later
         if (value !== "") {
             props.submit(value);
         }
@@ -34,10 +31,15 @@ export default function Account(props) {
 
 
     return (
-    <>{ editMode &&
+    <div className="icon-on-hover">
+    { editMode &&
         <form
             className="App-edit-form"
-            style={{ transform }}
+            style={{
+                transform: 'translate('
+                    + ( props.align === 'right' ? '-50%, ' : '0, ' )
+                    + ( props.align ? '-50%)' : '0)' )
+            }}
             onSubmit={ handleSubmit }
         >
             <input
@@ -61,34 +63,39 @@ export default function Account(props) {
     }
 
     { !editMode &&
-        <div className="icon-on-hover">
-            { props.content }
-            <div className="show-on-hover" >
-                <Tooltip
-                    title="Modifier"
-                    placement="top"
-                    TransitionComponent={Zoom}
-                >
-                    <Edit
-                        onClick={() => setEditMode(!editMode)}
-                    />
-                </Tooltip>
-                
-                <Tooltip
-                    title="Supprimer"
-                    placement="top"
-                    TransitionComponent={Zoom}
-                >                
-                    <Delete
-                        onClick={() => {
-                            window.confirm(
-                                'Voulez-vous vraiment supprimer cette opération ?'
-                            ) && props.delete();
-                        }}
-                    />
-                </Tooltip>
-            </div>
+    <>
+        { props.content }
+        <div
+            className="show-on-hover"
+            style={{
+                transform: 'translate(' + (props.align === 'right' ? '20%' : '-10%') + ', -80%)'
+            }}
+        >
+            <Tooltip
+                title="Modifier"
+                placement="top"
+                TransitionComponent={Zoom}
+            >
+                <Edit
+                    onClick={() => setEditMode(!editMode)}
+                />
+            </Tooltip>
+            
+            <Tooltip
+                title="Supprimer"
+                placement="top"
+                TransitionComponent={Zoom}
+            >                
+                <Delete
+                    onClick={() => {
+                        window.confirm(
+                            'Voulez-vous vraiment supprimer cette opération ?'
+                        ) && props.delete();
+                    }}
+                />
+            </Tooltip>
         </div>
-    }</>
+    </>}
+    </div>
     );
 };

@@ -5,12 +5,48 @@ import seeding from './Data/seeding.json';
 
 import { useState } from 'react';
 
-import Account from './Components/Account';
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
+
+import { Balance, Euro, Receipt } from '@mui/icons-material';
+
+import AccountsView from './Components/AccountsView';
+
+
+const calculateTotals = (accounts) => {
+  const totals = {
+    all: {
+      incomes: 0,
+      expenses: 0
+    }
+  };
+
+  [...accounts].forEach(account => {   
+    const result = account.rows.reduce((obj, current) => {
+      if (current.value < 0) {
+        obj.expenses += parseInt(current.value);
+      } else {
+        obj.incomes += parseInt(current.value);
+      }
+      
+      return obj;
+    }, { incomes: 0, expenses: 0 });
+
+    totals[account.id] = result;
+    totals.all.incomes += result.incomes;
+    totals.all.expenses += result.expenses;
+  });
+  
+  totals.all.balance = totals.all.incomes + totals.all.expenses;
+  return totals;
+};
 
 
 function App() {
-  const [rows, setRows] = useState(seeding[0]);
-
+  const [data, setData] = useState(seeding);
+  const totals = calculateTotals(data);
+  const { balance, incomes, expenses } = totals.all;
+  
   
   return (
     <div className="App">
@@ -24,6 +60,42 @@ function App() {
         </h1>
         
         <nav>
+          <div className="App-summary">
+            <Tooltip
+                title={ "Revenus" }
+                placement="top"
+                TransitionComponent={Zoom}
+            >
+              <div key='incomes'>
+                <Euro />
+                { incomes }
+              </div>
+            </Tooltip>
+
+            <Tooltip
+                title={
+                  "Dépenses (" + parseInt(expenses / incomes * 100) + "% des revenus)" }
+                placement="top"
+                TransitionComponent={Zoom}
+            >
+              <div key='expenses'>
+                <Receipt />
+                { expenses }
+              </div>
+            </Tooltip>
+
+            <Tooltip
+                title={ "Balance" }
+                placement="top"
+                TransitionComponent={Zoom}
+            >
+              <div>
+                <Balance />
+                { balance }
+              </div>
+            </Tooltip>
+          </div>
+
           <h2>Saisie des données</h2>
           <p className="App-link">Comptes</p>
           <p className="App-link">Projets</p>
@@ -40,12 +112,13 @@ function App() {
         </footer>
       </header>
 
-      <main className="App-main">
-        <Account
-          rows={ rows }
-          setRows={ setRows }
+      <div className="App-main">
+        <AccountsView
+          data={ data }
+          setData={ setData }
+          totals={ totals }
         />
-      </main>
+      </div>
     </div>
   );
 }

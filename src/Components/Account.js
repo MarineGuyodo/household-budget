@@ -30,20 +30,21 @@ const columns = [
 
   
 export default function Account(props) {
-    const rows = props.rows["rows"];
+    // Main data (operations)
+    const rows = props.rows;
 
-    const totals = (() => {
-        return [...rows].reduce((acc, current) => {
-            if (current.value < 0) {
-                acc.expenses += parseInt(current.value);
-            } else {
-                acc.incomes += parseInt(current.value);
-            }
+    // Manage navigation between table pages
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     
-            return acc;
-        }, { incomes: 0, expenses: 0 });
-    })();
+    const handleChangePage = (e, newPage) => setPage(newPage);
+    
+    const handleChangeRowsPerPage = (e) => {
+        setRowsPerPage(+e.target.value);
+        setPage(0);
+    };
 
+    // Toggle and manage new operation form
     const [addForm, toggleAddForm] = useState(false);
     const [newName, setNewName] = useState("");
     const [newValue, setNewValue] = useState("");
@@ -58,7 +59,7 @@ export default function Account(props) {
         }
     }
 
-    const handleAddFormSubmit = (e) => {
+    const handleNewOperation = (e) => {
         e.preventDefault();
 
         let newRows = [...rows];
@@ -74,48 +75,94 @@ export default function Account(props) {
             value: newValue
         });
 
-        props.setRows({ name: props.rows.name, rows: newRows });
+        props.setRows({ rows: newRows });
         setNewName("");
         setNewValue("");
     }
 
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-  
-    const handleChangePage = (e, newPage) => setPage(newPage);
-  
-    const handleChangeRowsPerPage = (e) => {
-      setRowsPerPage(+e.target.value);
-      setPage(0);
-    };
+    // Manage edit operation 
+    const handleEditOperation = (data, rowId, columnId) => {                                                
+        let newRows = [...rows];
+        
+        let editingRow = newRows.find(item => item.id === rowId);
+        editingRow[columnId] = data;
+
+        props.setRows({ rows: newRows });
+    }
+
+    // Manage delete operation
+    const handleDeleteOperation = (rowId) => {
+        let newRows = [...rows];
+        
+        const index = newRows.findIndex(item => item.id === rowId);
+        newRows.splice(index, 1);
+        
+        props.setRows({ rows: newRows });
+    }
 
 
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <div className="App-account-header">
+        <Paper sx={{ display: props.visible ? 'block' : 'none' }}>
+            <div className="Account-header">
                 <div
-                    style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between'
+                    }}
                 >
                     <h3>
                         <EditableContent
-                            content={ props.rows.name }
-                            submit={(data) => props.setRows({ name: data, rows })}
+                            content={ props.name }
+                            submit={(data) => props.setRows({ name: data })}
+                            delete={ props.delete }
                         />
                     </h3>
 
+                    <div className="Account-totals">
+                        <p style={{ color: 'green' }}>
+                            Revenus
+                            <span>{ props.totals.incomes }€</span>
+                        </p>
+                        <p style={{ color: 'red' }}>
+                            Dépenses
+                            <span>{ props.totals.expenses }€</span>
+                        </p>
+                        <p>
+                            Balance
+                            <span>{ props.totals.incomes + props.totals.expenses }€</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}
+                >
                     <Tooltip
                         title={ addForm ? "Annuler" : "Nouvelle opération" }
-                        placement="right"
+                        placement="left"
                         TransitionComponent={Zoom}
                     >
+                        <div>
                         { addForm
                             ? <Cancel {...addFormProps} />
                             : <AddCircle {...addFormProps} />
                         }
+                        </div>
                     </Tooltip>
 
-                    <div style={{ visibility: !addForm && 'hidden', marginRight: '1em' }}>
-                        <form onSubmit={ handleAddFormSubmit }>
+                    <div
+                        style={{
+                            visibility: !addForm && 'hidden',
+                            marginRight: '1em'
+                        }}
+                    >
+                        <form
+                            style={{ width: '100%' }}
+                            onSubmit={ handleNewOperation }
+                        >
                             <input
                                 type="text"
                                 placeholder="Intitulé"
@@ -139,15 +186,17 @@ export default function Account(props) {
                         </form>
                     </div>
                 </div>
-
-                <div className="App-account-totals">
-                    <p>Total : { totals.incomes + totals.expenses }€</p>
-                    <p style={{ color: 'green' }}>Revenus : { totals.incomes }€</p>
-                    <p style={{ color: 'red' }}>Dépense : { totals.expenses }€</p>
-                </div>
             </div>
 
-            <TableContainer sx={{ maxHeight: '80%' }}>
+            <TableContainer
+                className={ rows.length > 10 ? 'scrollable-y' : '' }
+                sx={{
+                    maxHeight: '79%',
+                    overflowX: 'hidden',
+                    marginRight: '0.6em',
+                    paddingRight: '0.2em'
+                }}
+            >
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
@@ -167,10 +216,10 @@ export default function Account(props) {
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row) => {
                             const color = row.value < 0
-                                ? 'rgba(255, 0, 0, 0.25)'
+                                ? 'rgba(10, 46, 52, 0.4)'
                                 : row.value > 0
-                                    ? 'rgba(0, 255, 0, 0.25)'
-                                    : 'rgba(200, 200, 200, 0.25)';
+                                    ? 'rgba(255, 187, 0, 0.4)'
+                                    : 'lightgrey';
                             
                         return (
                             <TableRow
@@ -178,48 +227,25 @@ export default function Account(props) {
                                 role="checkbox"
                                 tabIndex={-1}
                                 key={row.id}
+                                style={{ 'backgroundColor': color }}
                             >
                             {columns.map((column) => { 
                                 const value = row[column.id];
-
-                                const align = {
-                                    vertical: '-50%',
-                                    horizontal: '0'
-                                };
-
-                                if (column.align === 'right') {
-                                    align.horizontal = '-50%';
-                                }
 
                                 return (
                                 <TableCell
                                     key={ column.id }
                                     align={ column.align }
-                                    style={{ 'backgroundColor': color }}
                                 >
                                     <EditableContent
                                         content={
-                                            column.format && typeof value === 'number' ?
-                                                column.format(value) :
-                                                value
+                                            column.format && typeof value === 'number'
+                                                ? column.format(value)
+                                                : value
                                         }
-                                        align={ align }
-                                        submit={(data) => {                                                
-                                            let newRows = [...rows];
-                                            
-                                            let editingRow = newRows.find(item => item.id === row.id);
-                                            editingRow[column.id] = data;
-
-                                            props.setRows({ name: props.rows.name, rows: newRows });
-                                        }}
-                                        delete={() => {
-                                            let newRows = [...rows];
-                                            
-                                            const index = newRows.findIndex(item => item.id === row.id);
-                                            newRows.splice(index, 1);
-                                            
-                                            props.setRows({ name: props.rows.name, rows: newRows });
-                                        }}
+                                        align={ column.align || 'default' }
+                                        submit={(data) => handleEditOperation(data, row.id, column.id)}
+                                        delete={() => handleDeleteOperation(row.id)}
                                     />
                                 </TableCell>
                                 );
